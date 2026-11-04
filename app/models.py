@@ -1,9 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, Text, func, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
-
-from sqlalchemy import MetaData
+from sqlalchemy import DateTime, ForeignKey, MetaData, String, Text, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -13,13 +11,13 @@ convention = {
     "pk": "pk_%(table_name)s",
 }
 
+
 class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=convention)
-    pass
 
 
 class Note(Base):
-    __tablename__ = 'notes'
+    __tablename__ = "notes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(250))
@@ -31,18 +29,22 @@ class Note(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
 
     def __repr__(self):
         return f"<Note(title='{self.title}', description='{self.description}')>"
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(250))
     email: Mapped[str] = mapped_column(String(250), unique=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     def __repr__(self):
         return f"<user(name='{self.name}', email='{self.email}')>"
