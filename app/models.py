@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, MetaData, String, Text, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -32,6 +32,7 @@ class Note(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
+    user: Mapped["User"] = relationship(back_populates="notes")
 
     def __repr__(self):
         return f"<Note(title='{self.title}', description='{self.description}')>"
@@ -44,6 +45,11 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(250), unique=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
+    )
+    notes: Mapped[list["Note"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
     def __repr__(self):

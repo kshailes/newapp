@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.models import Note
+
 
 class NoteCreate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -33,3 +35,9 @@ class NoteUpdate(BaseModel):
         if v is None:
             raise ValueError("can not be null")
         return v
+
+class UserWithNotes(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    name: str
+    notes: list[NoteRead]
