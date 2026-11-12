@@ -46,6 +46,8 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    phone: Mapped[str | None] = mapped_column(String(250))
+    hashed_password: Mapped[str| None] = mapped_column(String(255))
     notes: Mapped[list["Note"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
